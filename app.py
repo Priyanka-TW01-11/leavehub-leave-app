@@ -1,8 +1,7 @@
 import streamlit as st
 from datetime import date
-import pandas as pd
 
-st.set_page_config(page_title="LeafFlow 🌿", page_icon="🌿", layout="centered")
+st.set_page_config(page_title="LeafFlow", page_icon="🌿", layout="centered")
 
 st.title("🌿 LeafFlow")
 st.caption("Employee Leave Management System")
@@ -17,7 +16,6 @@ if "username" not in st.session_state:
 
 users = {"rahul": "1234", "priya": "1234"}
 
-# Login
 if not st.session_state.logged_in:
     st.subheader("🔑 Login to LeafFlow")
     username = st.text_input("Username", placeholder="rahul or priya")
@@ -36,10 +34,15 @@ else:
     
     if st.button("Logout"):
         st.session_state.logged_in = False
-        st.session_state.username = None
         st.rerun()
 
-    tab1, tab2, tab3 = st.tabs(["📝 Apply Leave", "📋 History", "🗓️ 2026 Holidays"])
+    # Leave Balance
+    st.subheader("Your Leave Balance")
+    st.write("• Casual Leave: **12 days**")
+    st.write("• Sick Leave: **10 days**")
+    st.write("• Privilege Leave: **15 days**")
+
+    tab1, tab2, tab3 = st.tabs(["📝 Apply Leave", "📋 History", "🗓️ Holidays"])
 
     with tab1:
         st.subheader("New Leave Request")
@@ -64,16 +67,18 @@ else:
                     "Date": str(from_date),
                     "Type": leave_type,
                     "Status": "Pending",
-                    "Reason": reason if reason else "No reason provided"
+                    "Reason": reason if reason else "No reason"
                 })
-                st.success("✅ Leave request submitted!")
+                st.success("✅ Leave request submitted successfully!")
                 st.balloons()
 
     with tab2:
         st.subheader("Leave History")
         if st.session_state.leaves:
-            df = pd.DataFrame(st.session_state.leaves)
-            st.dataframe(df, use_container_width=True)
+            for leave in st.session_state.leaves:
+                st.write(f"**{leave['Date']}** - {leave['Type']} → {leave['Status']}")
+                st.write(f"Reason: {leave['Reason']}")
+                st.divider()
         else:
             st.info("No leave requests yet")
 
